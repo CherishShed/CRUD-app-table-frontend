@@ -4,16 +4,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 function ToastComp(props) {
-    const notify = () => {
-        toast.success(props.text, {
-            position: toast.POSITION.TOP_RIGHT,
-            className: 'foo-bar'
-        });
-    };
+
 
     return (
         <>
-            <button onClick={notify}>Notify</button>
             <ToastContainer />
         </>
     );

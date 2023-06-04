@@ -3,15 +3,18 @@ import ToastComp from './toastComponent';
 import api from '../controllers/data';
 import BasicModal from './person';
 import DataTable from './DataTable';
+import { toast } from 'react-toastify';
 
 function HomePage() {
     const [mydata, setMyData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
-    const [person, setPerson] = useState({ name: "", email: "", contact: "" });
+    const [person, setPerson] = useState({ name: "", email: "", contact: "", id: 0 });
     const [modalStatus, setModalStatus] = useState(false)
-    const [editText, setEditText] = useState("Edited Successfully")
-    const [method, setMethod] = useState("")
+    const [editText, setEditText] = useState("")
+    const [method, setMethod] = useState("");
+
+
 
     const handleViewOpen = (value) => {
         setMethod("")
@@ -25,6 +28,8 @@ function HomePage() {
 
     }
     const handleClose = () => {
+
+        setEditText("");
         setModalStatus(true);
         setModalStatus(false);
         setMethod("")
@@ -57,6 +62,43 @@ function HomePage() {
         return found;
     }
 
+    async function handleSubmit(formData) {
+        if (method === "POST") {
+            api.createPerson(formData)
+                .then((result) => {
+                    if (result === "success") {
+                        setEditText("Created Successfully");
+                        toast.success(editText, {
+                            position: toast.POSITION.TOP_RIGHT,
+                            className: 'foo-bar'
+                        });
+                    } else {
+                        setEditText("Error occured");
+                        toast.error(editText, {
+                            position: toast.POSITION.TOP_RIGHT,
+                            className: 'foo-bar'
+                        });
+                    }
+                })
+        } else {
+            api.editPerson(formData)
+                .then((result) => {
+                    if (result === "success") {
+                        setEditText("Created Successfully");
+                        toast.success(editText, {
+                            position: toast.POSITION.TOP_RIGHT,
+                            className: 'foo-bar'
+                        });
+                    } else {
+                        setEditText("Error occured");
+                        toast.error(editText, {
+                            position: toast.POSITION.TOP_RIGHT,
+                            className: 'foo-bar'
+                        });
+                    }
+                })
+        }
+    }
 
     return (
         <div>
@@ -66,8 +108,8 @@ function HomePage() {
             {(!loading) &&
                 <DataTable handleOpen={handleViewOpen} mydata={mydata} handleEditOpen={handleEditOpen} />
             }
-            <BasicModal open={open} handleClose={handleClose} person={person} status={modalStatus} method={method} />
-            <ToastComp text={editText} />
+            <BasicModal open={open} handleClose={handleClose} person={person} status={modalStatus} method={method} handleSubmit={handleSubmit} />
+            <ToastComp />
         </div>
     )
 }

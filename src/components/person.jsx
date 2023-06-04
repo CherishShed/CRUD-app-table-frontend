@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Call, Message } from "@mui/icons-material";
-import { Button, InputAdornment, TextField } from '@mui/material';
+import { Call, Message, AccountCircle } from "@mui/icons-material";
+import { Button, InputAdornment, TextField, ButtonGroup } from '@mui/material';
 
 const style = {
     position: 'absolute',
@@ -17,8 +17,8 @@ const style = {
 };
 
 export default function BasicModal(props) {
-    const [formData, setFormData] = useState({ name: "", email: "", contact: "" });
-
+    const [formData, setFormData] = useState({ name: props.person.name, email: props.person.email, contact: props.person.contact });
+    const id = props.id;
     return (
         <div>
             <Modal
@@ -33,23 +33,26 @@ export default function BasicModal(props) {
                     event.preventDefault();
                 }}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Message /></InputAdornment>, readOnly: props.status, value: props.person.name }} style={{ width: "100%", textAlign: "center" }} onChange={props.handle}>
-
+                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><AccountCircle /></InputAdornment>, readOnly: props.status, value: props.person.name }} style={{ width: "100%", textAlign: "center" }} onChange={(e) => { setFormData({ ...FormData, name: e.target.value }) }} required>
                         </TextField>
                     </Typography>
                     <Typography id="modal-modal-description">
-                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Message /></InputAdornment>, readOnly: props.status, value: props.person.email }} style={{ width: "100%", textAlign: "center" }}>
-
+                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Message /></InputAdornment>, readOnly: props.status, value: props.person.email }} style={{ width: "100%", textAlign: "center" }} onChange={(e) => { setFormData({ ...FormData, email: e.target.value }) }} required>
                         </TextField>
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Call /></InputAdornment>, readOnly: props.status, value: props.person.contact }} style={{ width: "100%", textAlign: "center" }}>
+                    <Typography id="modal-modal-description">
+                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Call /></InputAdornment>, readOnly: props.status, value: props.person.contact }} style={{ width: "100%", textAlign: "center" }} onChange={(e) => { setFormData({ ...FormData, contact: e.target.value }) }} required>
                         </TextField>
                     </Typography>
-                    {(props.method !== "") &&
-                        < Button type='submit' color="success" variant='outlined'>Submit</Button>
-                    }
-
+                    <ButtonGroup>
+                        {(props.method !== "") &&
+                            <Button type='submit' color="success" variant='outlined'>Submit</Button>
+                        }
+                        <Button color="error" variant='outlined' onClick={(event) => {
+                            event.preventDefault();
+                            props.handleClose()
+                        }}>Close</Button>
+                    </ButtonGroup>
                 </Box>
             </Modal>
         </div >
