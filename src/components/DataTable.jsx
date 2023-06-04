@@ -50,7 +50,7 @@ function DataTable(props) {
                             <IconButton onClick={() => props.handleOpen(tableMeta.rowData[0])}>
                                 <RemoveRedEye />
                             </IconButton>
-                            <IconButton onClick={() => props.handleOpen(tableMeta.rowData[0])}>
+                            <IconButton onClick={() => props.handleEditOpen(tableMeta.rowData[0])}>
                                 <EditIcon />
                             </IconButton>
                         </ButtonGroup>
