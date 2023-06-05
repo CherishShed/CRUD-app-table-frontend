@@ -45,7 +45,7 @@ function HomePage() {
 
     useEffect(() => {
         console.log(mydata)
-        const timer = setTimeout(() => {
+        setTimeout(() => {
             renderData()
         }, 1000)
     }, [])
@@ -112,10 +112,10 @@ function HomePage() {
     async function handleDelete(items) {
         console.log(items)
         const toDelete = [];
-        items.map(item => {
+        items.forEach((item) => {
             console.log(item)
             let data = mydata[item]
-            // console.log(data);
+
             toDelete.push(data.id);
 
         })
