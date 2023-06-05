@@ -9,95 +9,98 @@ function HomePage() {
     const [mydata, setMyData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
-    const [person, setPerson] = useState({ name: "", email: "", contact: "", id: 0 });
+    const [person, setPerson] = useState(0);
     const [modalStatus, setModalStatus] = useState(false)
     const [editText, setEditText] = useState("")
-    const [method, setMethod] = useState("");
+    const [method, setMethod] = useState("post");
 
-
-
-    const handleViewOpen = (value) => {
+    async function handleViewOpen(value) {
         setMethod("")
         setModalStatus(true);
         setOpen(true);
-        findPerson(value)
-            .then((found) => {
-                const { name, email, contact } = found[0];
-                setPerson({ name, email, contact });
-            })
+        setPerson(value);
+
+        // console.log(person)
 
     }
     const handleClose = () => {
-
         setEditText("");
-        setModalStatus(true);
         setModalStatus(false);
         setMethod("")
         setOpen(false)
-        setPerson({ name: "", email: "", contact: "" });
+        setPerson(0);
+
     };
 
-    const handleEditOpen = (value) => {
-        setMethod("PATCH");
+    function handleEditOpen(value) {
         setModalStatus(false);
         setOpen(true);
-        findPerson(value)
-            .then((found) => {
-                const { name, email, contact } = found[0];
-                setPerson({ name, email, contact });
-            })
-
+        setMethod("patch");
+        setPerson(value);
     }
 
     useEffect(() => {
-        setTimeout(() => {
-            api.getAllData()
-                .then((result) => setMyData(result));
-            setLoading(false);
-
+        console.log(mydata)
+        const timer = setTimeout(() => {
+            renderData()
         }, 1000)
     }, [])
-    async function findPerson(id) {
-        let found = await api.getOne(id);
-        return found;
-    }
 
-    async function handleSubmit(formData) {
-        if (method === "POST") {
-            api.createPerson(formData)
+    useEffect(() => {
+        if (editText === "Edited Successfully") {
+            toast.success(editText, {
+                position: toast.POSITION.TOP_RIGHT,
+                className: 'foo-bar'
+            });
+        } else if (editText === "Error Ocurred") {
+            toast.error(editText, {
+                position: toast.POSITION.TOP_RIGHT,
+                className: 'foo-bar'
+            });
+        }
+    }, [editText])
+    function renderData() {
+        api.getAllData()
+            .then((result) => setMyData(result));
+        setLoading(false);
+    }
+    async function handleSubmit(id, formData) {
+        console.log("submitting");
+        console.log(method);
+        if (method === "post") {
+            // api.createPerson(formData)
+            //     .then((result) => {
+            //         if (result === "ok") {
+            //             setEditText("Created Successfully");
+            //             toast.success(editText, {
+            //                 position: toast.POSITION.TOP_RIGHT,
+            //                 className: 'foo-bar'
+            //             });
+            //         } else {
+            //             setEditText("Error occured");
+            //             toast.error(editText, {
+            //                 position: toast.POSITION.TOP_RIGHT,
+            //                 className: 'foo-bar'
+            //             });
+            //         }
+            //     })
+        } else if (method === "patch") {
+            api.editPerson(id, formData)
                 .then((result) => {
-                    if (result === "success") {
-                        setEditText("Created Successfully");
-                        toast.success(editText, {
-                            position: toast.POSITION.TOP_RIGHT,
-                            className: 'foo-bar'
-                        });
+                    console.log(result)
+                    if (result.status === "ok") {
+                        console.log("successfully updated")
+                        setEditText("Edited Successfully");
+                        renderData()
+
                     } else {
+                        console.log("failed to edit")
                         setEditText("Error occured");
-                        toast.error(editText, {
-                            position: toast.POSITION.TOP_RIGHT,
-                            className: 'foo-bar'
-                        });
-                    }
-                })
-        } else {
-            api.editPerson(formData)
-                .then((result) => {
-                    if (result === "success") {
-                        setEditText("Created Successfully");
-                        toast.success(editText, {
-                            position: toast.POSITION.TOP_RIGHT,
-                            className: 'foo-bar'
-                        });
-                    } else {
-                        setEditText("Error occured");
-                        toast.error(editText, {
-                            position: toast.POSITION.TOP_RIGHT,
-                            className: 'foo-bar'
-                        });
+
                     }
                 })
         }
+        setOpen(false);
     }
 
     return (

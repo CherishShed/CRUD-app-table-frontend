@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Call, Message, AccountCircle } from "@mui/icons-material";
 import { Button, InputAdornment, TextField, ButtonGroup } from '@mui/material';
-
+import api from "../controllers/data"
 const style = {
     position: 'absolute',
     top: '50%',
@@ -17,8 +17,16 @@ const style = {
 };
 
 export default function BasicModal(props) {
-    const [formData, setFormData] = useState({ name: props.person.name, email: props.person.email, contact: props.person.contact });
-    const id = props.id;
+    const [formData, setFormData] = useState({});
+    useEffect(() => {
+        setTimeout(async () => {
+            api.getOne(props.person)
+                .then((found) => {
+                    setFormData({ ...found[0] });
+                })
+        }, 1000);
+    }, [props.person])
+
     return (
         <div>
             <Modal
@@ -28,30 +36,30 @@ export default function BasicModal(props) {
                 aria-describedby="modal-modal-description"
             >
                 <Box component={"form"} sx={style} method={props.method} action='/' onSubmit={(event) => {
-                    props.handleSubmit(formData)
-                    setFormData({ name: "", email: "", contact: "" })
                     event.preventDefault();
-                }}>
+                }} className='form'>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><AccountCircle /></InputAdornment>, readOnly: props.status, value: props.person.name }} style={{ width: "100%", textAlign: "center" }} onChange={(e) => { setFormData({ ...FormData, name: e.target.value }) }} required>
+                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><AccountCircle /></InputAdornment>, readOnly: props.status }} style={{ width: "100%", textAlign: "center" }} onChange={(e) => {
+                            setFormData({ ...formData, name: e.target.value })
+                        }} required value={formData.name}>
                         </TextField>
                     </Typography>
                     <Typography id="modal-modal-description">
-                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Message /></InputAdornment>, readOnly: props.status, value: props.person.email }} style={{ width: "100%", textAlign: "center" }} onChange={(e) => { setFormData({ ...FormData, email: e.target.value }) }} required>
+                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Message /></InputAdornment>, readOnly: props.status }} style={{ width: "100%" }} onChange={(e) => { setFormData({ ...formData, email: e.target.value }) }} required value={formData.email} type='email' >
                         </TextField>
                     </Typography>
                     <Typography id="modal-modal-description">
-                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Call /></InputAdornment>, readOnly: props.status, value: props.person.contact }} style={{ width: "100%", textAlign: "center" }} onChange={(e) => { setFormData({ ...FormData, contact: e.target.value }) }} required>
+                        <TextField InputProps={{ startAdornment: <InputAdornment position='start'><Call /></InputAdornment>, readOnly: props.status }} style={{ width: "100%", textAlign: "center" }} onChange={(e) => { setFormData({ ...formData, contact: e.target.value }) }} required value={formData.contact}>
                         </TextField>
                     </Typography>
                     <ButtonGroup>
                         {(props.method !== "") &&
-                            <Button type='submit' color="success" variant='outlined'>Submit</Button>
+                            <Button type='submit' color="success" variant='outlined' onClick={(event) => {
+                                event.preventDefault();
+                                props.handleSubmit(props.person, formData);
+                            }}>Submit</Button>
                         }
-                        <Button color="error" variant='outlined' onClick={(event) => {
-                            event.preventDefault();
-                            props.handleClose()
-                        }}>Close</Button>
+
                     </ButtonGroup>
                 </Box>
             </Modal>

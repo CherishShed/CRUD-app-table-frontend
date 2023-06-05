@@ -7,6 +7,7 @@ const api = {
     },
 
     getOne: async (id) => {
+        console.log("getting");
         const result = axios.get(`http://127.0.0.1:8081/${id}`);
         return result.then((response) => response.data);
     },
@@ -21,14 +22,8 @@ const api = {
             })
     },
     editPerson: async (id, data) => {
-        axios.patch(`http://127.0.0.1:8081/${id}`, data)
-            .then((err, result) => {
-                if (err) {
-                    return "error"
-                } else {
-                    return "success"
-                }
-            })
+        const result = axios.patch(`http://127.0.0.1:8081/${id}`, data);
+        return result.then((response) => response.data)
     }
 }
 

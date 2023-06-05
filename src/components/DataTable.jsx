@@ -2,7 +2,7 @@ import React from 'react';
 import MUIDataTable from "mui-datatables";
 import EditIcon from '@mui/icons-material/Edit';
 import { RemoveRedEye } from '@mui/icons-material';
-import { ButtonGroup, IconButton } from '@mui/material';
+import { ButtonGroup, IconButton, Button } from '@mui/material';
 
 function DataTable(props) {
     const columns = [
@@ -67,6 +67,9 @@ function DataTable(props) {
                 return props.mydata[set.index].id;
             })
             console.log(me);
+        },
+        customToolbar: () => {
+            return (<Button variant="contained" color="warning">Add Contact</Button>)
         }
     };
     return (
