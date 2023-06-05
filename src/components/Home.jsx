@@ -13,7 +13,7 @@ function HomePage() {
     const [modalStatus, setModalStatus] = useState(false)
     const [editText, setEditText] = useState("")
     const [method, setMethod] = useState("post");
-
+    const toastDuration = 2000;
     async function handleViewOpen(value) {
         setMethod("")
         setModalStatus(true);
@@ -24,18 +24,22 @@ function HomePage() {
 
     }
     const handleClose = () => {
+        setPerson(0);
         setEditText("");
         setModalStatus(false);
         setMethod("")
         setOpen(false)
-        setPerson(0);
 
     };
 
     function handleEditOpen(value) {
         setModalStatus(false);
+        if (value === 0) {
+            setMethod("post")
+        } else {
+            setMethod("patch");
+        }
         setOpen(true);
-        setMethod("patch");
         setPerson(value);
     }
 
@@ -47,15 +51,21 @@ function HomePage() {
     }, [])
 
     useEffect(() => {
-        if (editText === "Edited Successfully") {
+        if (editText === "Edited Successfully" || editText === "Created Successfully" || editText === "Deleted Successfully") {
             toast.success(editText, {
                 position: toast.POSITION.TOP_RIGHT,
-                className: 'foo-bar'
+                className: 'foo-bar',
+                pauseOnHover: false,
+                autoClose: toastDuration,
+                theme: "dark"
             });
         } else if (editText === "Error Ocurred") {
             toast.error(editText, {
                 position: toast.POSITION.TOP_RIGHT,
-                className: 'foo-bar'
+                className: 'foo-bar',
+                pauseOnHover: false,
+                autoClose: toastDuration,
+                theme: "dark"
             });
         }
     }, [editText])
@@ -68,22 +78,18 @@ function HomePage() {
         console.log("submitting");
         console.log(method);
         if (method === "post") {
-            // api.createPerson(formData)
-            //     .then((result) => {
-            //         if (result === "ok") {
-            //             setEditText("Created Successfully");
-            //             toast.success(editText, {
-            //                 position: toast.POSITION.TOP_RIGHT,
-            //                 className: 'foo-bar'
-            //             });
-            //         } else {
-            //             setEditText("Error occured");
-            //             toast.error(editText, {
-            //                 position: toast.POSITION.TOP_RIGHT,
-            //                 className: 'foo-bar'
-            //             });
-            //         }
-            //     })
+            console.log(formData)
+            api.createPerson(formData)
+                .then((result) => {
+                    if (result.status === "ok") {
+                        console.log("creating")
+                        setEditText("Created Successfully");
+                        renderData();
+                    } else {
+                        setEditText("Error occured");
+
+                    }
+                })
         } else if (method === "patch") {
             api.editPerson(id, formData)
                 .then((result) => {
@@ -91,7 +97,7 @@ function HomePage() {
                     if (result.status === "ok") {
                         console.log("successfully updated")
                         setEditText("Edited Successfully");
-                        renderData()
+                        renderData();
 
                     } else {
                         console.log("failed to edit")
@@ -103,13 +109,38 @@ function HomePage() {
         setOpen(false);
     }
 
+    async function handleDelete(items) {
+        console.log(items)
+        const toDelete = [];
+        items.map(item => {
+            console.log(item)
+            let data = mydata[item]
+            // console.log(data);
+            toDelete.push(data.id);
+
+        })
+        console.log(toDelete)
+        api.deletePerson(toDelete)
+            .then((result) => {
+                console.log(result)
+                if (result.status === "ok") {
+                    setEditText("Deleted Successfully");
+                    renderData();
+
+                } else {
+                    console.log("failed to edit")
+                    setEditText("Error occured");
+
+                }
+            })
+    }
     return (
         <div>
             {(loading) &&
                 <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_LBnGq7OY4M.json" mode="bounce" background="transparent" speed="1" style={{ width: "500px", height: "500px", margin: "0 auto" }} loop autoplay></lottie-player>
             }
             {(!loading) &&
-                <DataTable handleOpen={handleViewOpen} mydata={mydata} handleEditOpen={handleEditOpen} />
+                <DataTable handleOpen={handleViewOpen} mydata={mydata} handleEditOpen={handleEditOpen} handleDelete={handleDelete} />
             }
             <BasicModal open={open} handleClose={handleClose} person={person} status={modalStatus} method={method} handleSubmit={handleSubmit} />
             <ToastComp />

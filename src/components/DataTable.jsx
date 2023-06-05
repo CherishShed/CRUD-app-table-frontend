@@ -69,7 +69,13 @@ function DataTable(props) {
             console.log(me);
         },
         customToolbar: () => {
-            return (<Button variant="contained" color="warning">Add Contact</Button>)
+            return (<Button variant="contained" color="warning" onClick={() => props.handleEditOpen(0)}>Add Contact</Button>)
+        },
+        onRowsDelete: (rowsDeleted, data) => {
+            const toDelete = rowsDeleted.data.map((row) => row.dataIndex);
+            props.handleDelete(toDelete);
+            console.log(rowsDeleted);
+
         }
     };
     return (

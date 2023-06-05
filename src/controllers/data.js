@@ -12,17 +12,15 @@ const api = {
         return result.then((response) => response.data);
     },
     createPerson: async (data) => {
-        axios.post(`http://127.0.0.1:8081/`, data)
-            .then((err, result) => {
-                if (err) {
-                    return "error"
-                } else {
-                    return "success"
-                }
-            })
+        const result = axios.post(`http://127.0.0.1:8081/`, data)
+        return result.then((response) => response.data)
     },
     editPerson: async (id, data) => {
         const result = axios.patch(`http://127.0.0.1:8081/${id}`, data);
+        return result.then((response) => response.data)
+    },
+    deletePerson: async (items) => {
+        const result = axios.delete(`http://127.0.0.1:8081/`, { data: items });
         return result.then((response) => response.data)
     }
 }
